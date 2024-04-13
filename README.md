@@ -1,2 +1,2 @@
-# ms_registros_usuarios_v2
+# DESARROLLO FULLSTACK I_001A - Ejercicio A - ms_registros_usuarios_v2
 Semana 6 - Microservicio a. - Registros usuarios.
