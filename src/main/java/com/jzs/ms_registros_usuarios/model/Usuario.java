@@ -1,9 +1,11 @@
 package com.jzs.ms_registros_usuarios.model;
 
-import jakarta.persistence.*;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "usuarios")
@@ -15,17 +17,22 @@ public class Usuario {
     private Long id;
 
     @Column(name = "username")
+    @NotBlank(message = "El nombre de usuario no puede estar vacío")
     private String username;
 
     @Column(name = "password")
+    @NotBlank(message = "La contraseña no puede estar vacía")
+    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String password;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonManagedReference
+    //@NotEmpty(message = "El usuario debe tener al menos un rol asignado")
     private List<Rol> roles;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JsonManagedReference
+    //@NotEmpty(message = "El usuario debe tener al menos un despacho asignado")
     private List<Despacho> despachos;
 
     public Long getId() {
