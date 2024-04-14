@@ -10,4 +10,5 @@ public interface RegUsuService {
     Usuario createUsuario(Usuario usuario);
     Usuario updateUsuario(Long id, Usuario usuario);
     void deleteUsuario(Long id);
+    Usuario findByUsername(String username);
 }

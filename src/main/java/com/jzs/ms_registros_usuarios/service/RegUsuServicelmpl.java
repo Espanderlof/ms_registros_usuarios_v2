@@ -43,4 +43,9 @@ public class RegUsuServicelmpl implements RegUsuService {
     public void deleteUsuario(Long id) {
         regUsuRepository.deleteById(id);
     }
+
+    @Override
+    public Usuario findByUsername(String username) {
+        return regUsuRepository.findByUsername(username);
+    }
 }
