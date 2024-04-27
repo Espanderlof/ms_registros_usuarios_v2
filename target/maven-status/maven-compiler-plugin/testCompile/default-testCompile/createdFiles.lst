@@ -1,0 +1,4 @@
+com\jzs\ms_registros_usuarios\service\RegUsuServiceTest.class
+com\jzs\ms_registros_usuarios\MsRegistrosUsuariosApplicationTests.class
+com\jzs\ms_registros_usuarios\controller\RegUsuControllerTest.class
+com\jzs\ms_registros_usuarios\repository\RegUsuRepositoryTest.class
