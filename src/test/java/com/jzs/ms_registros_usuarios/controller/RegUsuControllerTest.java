@@ -32,21 +32,22 @@ public class RegUsuControllerTest {
         usuario1.setId(1L);
         usuario1.setUsername("usuario1");
         usuario1.setPassword("password1");
-
+    
         Usuario usuario2 = new Usuario();
         usuario2.setId(2L);
         usuario2.setUsername("usuario2");
         usuario2.setPassword("password2");
-
+    
         List<Usuario> usuarios = Arrays.asList(usuario1, usuario2);
-
+    
         when(regUsuServiceMock.getAllUsuarios()).thenReturn(usuarios);
-
+    
         mockMvc.perform(MockMvcRequestBuilders.get("/usuarios"))
             .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(MockMvcResultMatchers.jsonPath("$", Matchers.hasSize(2)))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[0].username", Matchers.is("usuario1")))
-            .andExpect(MockMvcResultMatchers.jsonPath("$[1].username", Matchers.is("usuario2")));
+            .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.usuarioList", Matchers.hasSize(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.usuarioList[0].username", Matchers.is("usuario1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$._embedded.usuarioList[1].username", Matchers.is("usuario2")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$._links.usuarios.href", Matchers.endsWith("/usuarios")));
     }
 
     @Test

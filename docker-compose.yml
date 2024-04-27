@@ -1,0 +1,13 @@
+version: '1'
+services:
+  ms-registro-usuarios-v2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - spring.datasource.url=jdbc:oracle:thin:@f8bfpcsh45psln97_tp?TNS_ADMIN=/app/oracle_wallet/
+      - spring.datasource.username=JAVA_BD
+      - spring.datasource.password=ClaseFullStack1-
+    restart: always
