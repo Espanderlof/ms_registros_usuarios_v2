@@ -2,6 +2,7 @@ package com.jzs.ms_registros_usuarios.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,4 +44,36 @@ public class RegUsuRepositoryTest {
         assertEquals("usuario_prueba", usuarioEncontrado.getUsername());
         assertEquals("password_prueba", usuarioEncontrado.getPassword());
     }
+
+    @Test
+    public void actualizarUsuarioTest() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("usuario_actualizar");
+        usuario.setPassword("password_inicial");
+        Usuario usuarioGuardado = regUsuRepository.save(usuario);
+
+        usuarioGuardado.setPassword("password_actualizado");
+        Usuario usuarioActualizado = regUsuRepository.save(usuarioGuardado);
+
+        assertEquals(usuarioGuardado.getId(), usuarioActualizado.getId());
+        assertEquals("usuario_actualizar", usuarioActualizado.getUsername());
+        assertEquals("password_actualizado", usuarioActualizado.getPassword());
+    }
+
+    @Test
+    public void eliminarUsuarioTest() {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("usuario_eliminar");
+        usuario.setPassword("password_eliminar");
+        Usuario usuarioGuardado = regUsuRepository.save(usuario);
+
+        Usuario usuarioEncontrado = regUsuRepository.findByUsername("usuario_eliminar");
+        assertNotNull(usuarioEncontrado);
+
+        regUsuRepository.delete(usuarioGuardado);
+
+        Usuario usuarioEliminado = regUsuRepository.findByUsername("usuario_eliminar");
+        assertNull(usuarioEliminado);
+    }
+
 }

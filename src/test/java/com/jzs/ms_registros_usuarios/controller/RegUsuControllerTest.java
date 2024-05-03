@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 
@@ -70,6 +71,45 @@ public class RegUsuControllerTest {
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(MockMvcResultMatchers.jsonPath("$.respuesta", Matchers.is(true)))
             .andExpect(MockMvcResultMatchers.jsonPath("$.message", Matchers.is("Autenticación exitosa.")));
+    }
+
+    @Test
+    public void getUsuarioByIdTest() throws Exception {
+        Long usuarioId = 1L;
+        Usuario usuario = new Usuario();
+        usuario.setId(usuarioId);
+        usuario.setUsername("usuario1");
+        usuario.setPassword("password1");
+    
+        when(regUsuServiceMock.getUsuarioById(usuarioId)).thenReturn(Optional.of(usuario));
+    
+        mockMvc.perform(MockMvcRequestBuilders.get("/usuarios/{id}", usuarioId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username", Matchers.is("usuario1")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$._links.self.href", Matchers.endsWith("/usuarios/" + usuarioId)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$._links.all-usuarios.href", Matchers.endsWith("/usuarios")));
+    }
+
+    @Test
+    public void createUsuarioTest() throws Exception {
+        Usuario usuario = new Usuario();
+        usuario.setUsername("newUser");
+        usuario.setPassword("newPassword");
+    
+        Usuario usuarioCreado = new Usuario();
+        usuarioCreado.setId(3L);
+        usuarioCreado.setUsername("newUser");
+        usuarioCreado.setPassword("newPassword");
+    
+        when(regUsuServiceMock.createUsuario(usuario)).thenReturn(usuarioCreado);
+    
+        mockMvc.perform(MockMvcRequestBuilders.post("/usuarios")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"username\":\"newUser\",\"password\":\"newPassword\"}"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.username", Matchers.is("newUser")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$._links.self.href", Matchers.endsWith("/usuarios/3")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$._links.all-usuarios.href", Matchers.endsWith("/usuarios")));
     }
 
 }

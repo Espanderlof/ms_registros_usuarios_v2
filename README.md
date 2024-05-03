@@ -1,5 +1,5 @@
 # DESARROLLO FULLSTACK I_001A - Ejercicio A - ms_registros_usuarios_v2
-Semana 8 - Microservicio a. - Registros usuarios.
+Semana 9 - Microservicio a. - Registros usuarios.
 
 Perfecto, veo que tienes tu proyecto en un repositorio de GitHub. Aquí te explico paso a paso cómo puedes usar Docker Playground para clonar tu repositorio, construir y ejecutar tus contenedores, y hacer pruebas:
 
@@ -23,10 +23,10 @@ Después de clonar el repositorio, navega al directorio del proyecto ejecutando 
 
 cd ms_registros_usuarios_v2
 
-## Cambia a la rama "sem8" (si es necesario):
-Si tu proyecto se encuentra en una rama específica, en este caso "sem8", asegúrate de cambiar a esa rama ejecutando el siguiente comando:
+## Cambia a la rama "sem9" (si es necesario):
+Si tu proyecto se encuentra en una rama específica, en este caso "sem9", asegúrate de cambiar a esa rama ejecutando el siguiente comando:
 
-git checkout sem8
+git checkout sem9
 
 ## Construye y ejecuta tus contenedores:
 Asegúrate de que tus archivos Dockerfile y docker-compose.yml se encuentren en el directorio actual.
