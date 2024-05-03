@@ -3,20 +3,24 @@ package com.jzs.ms_registros_usuarios.controller;
 import com.jzs.ms_registros_usuarios.model.Usuario;
 import com.jzs.ms_registros_usuarios.service.RegUsuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import jakarta.validation.Valid;
-import org.springframework.validation.FieldError;
+import java.util.stream.Collectors;
 
+import jakarta.validation.Valid;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,65 +35,53 @@ public class RegUsuController {
     private RegUsuService regUsuService;  
     
     @GetMapping
-    public ResponseEntity<List<Usuario>> getAllUsuarios() {
+    public CollectionModel<EntityModel<Usuario>> getAllUsuarios() {
         List<Usuario> usuarios = regUsuService.getAllUsuarios();
-        return ResponseEntity.ok(usuarios);
+        log.info("GET /usuarios");
+        log.info("Retornando todos los usuarios");
+        List<EntityModel<Usuario>> usuariosResources = usuarios.stream()
+                .map(usuario -> EntityModel.of(usuario,
+                        WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getUsuarioById(usuario.getId())).withSelfRel()
+                ))
+                .collect(Collectors.toList());
+
+        WebMvcLinkBuilder linkTo = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllUsuarios());
+        CollectionModel<EntityModel<Usuario>> resources = CollectionModel.of(usuariosResources, linkTo.withRel("usuarios"));
+
+        return resources;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUsuarioById(@Validated @PathVariable Long id) {
-        if (id == null) {
-            log.info("Debe ingresar el id de usuario.");
-            return ResponseEntity.badRequest().body(new ErrorResponse(false, "Debe ingresar el id de usuario."));
-        }
-
+    public EntityModel<Usuario> getUsuarioById(@Validated @PathVariable Long id) {
         Optional<Usuario> usuario = regUsuService.getUsuarioById(id);
-        if (!usuario.isPresent()) {
-            log.info("No se encontro el usuario con ID {}.", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(false, "No se encontro el usuario con ID "+id+"."));
+
+        if (usuario.isPresent()) {
+            return EntityModel.of(usuario.get(),
+                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getUsuarioById(id)).withSelfRel(),
+                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllUsuarios()).withRel("all-usuarios"));
+        } else {
+            throw new RegUsuNotFoundException("No se encontró el usuario con ID " + id);
         }
-        return usuario.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> createUsuario(@Valid @RequestBody Usuario usuario) {
-        Usuario nuevaUsuario = regUsuService.createUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaUsuario);
+    public EntityModel<Usuario> createUsuario(@Valid @RequestBody Usuario usuario) {
+        Usuario nuevoUsuario = regUsuService.createUsuario(usuario);
+        return EntityModel.of(nuevoUsuario,
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getUsuarioById(nuevoUsuario.getId())).withSelfRel(),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllUsuarios()).withRel("all-usuarios"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
-        Optional<Usuario> usuarioOptional = regUsuService.getUsuarioById(id);
-        if (!usuarioOptional.isPresent()) {
-            log.info("No se encontro el usuario con ID {}.", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(false, "No se encontro el usuario con ID "+id+"."));
-        }
-
+    public EntityModel<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
         Usuario usuarioActualizado = regUsuService.updateUsuario(id, usuario);
-        if (usuarioActualizado != null) {
-            return ResponseEntity.ok(usuarioActualizado);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return EntityModel.of(usuarioActualizado,
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getUsuarioById(id)).withSelfRel(),
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllUsuarios()).withRel("all-usuarios"));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUsuario(@Validated @PathVariable Long id) {
-        if (id == null) {
-            log.info("Debe ingresar el id de usuario a eliminar.");
-            return ResponseEntity.badRequest().body(new ErrorResponse(false, "Debe ingresar el id de usuario a eliminar."));
-        }
-
-        Optional<Usuario> usuario = regUsuService.getUsuarioById(id);
-        if (!usuario.isPresent()) {
-            log.info("No se encontro el usuario con ID {}.", id);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(false, "No se encontro el usuario con ID "+id+"."));
-        }
-
-        // regUsuService.deleteUsuario(id);
-        // return ResponseEntity.noContent().build();
-        
         try {
             regUsuService.deleteUsuario(id);
             return ResponseEntity.ok(new ErrorResponse(true, "Usuario eliminado correctamente."));
@@ -176,5 +168,11 @@ public class RegUsuController {
             errors.put(fieldName, errorMessage);
         });
         return errors;
+    }
+
+    static class RegUsuNotFoundException extends RuntimeException {
+        public RegUsuNotFoundException(String message) {
+            super(message);
+        }
     }
 }

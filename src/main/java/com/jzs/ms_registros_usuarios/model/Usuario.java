@@ -6,11 +6,12 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import org.springframework.hateoas.RepresentationModel;
 
 @Entity
 @Table(name = "usuarios")
 @JsonIdentityReference(alwaysAsId = true)
-public class Usuario {
+public class Usuario extends RepresentationModel<Usuario> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

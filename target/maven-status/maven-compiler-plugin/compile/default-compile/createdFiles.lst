@@ -1,0 +1,11 @@
+com\jzs\ms_registros_usuarios\model\Usuario.class
+com\jzs\ms_registros_usuarios\controller\RegUsuController.class
+com\jzs\ms_registros_usuarios\model\Despacho.class
+com\jzs\ms_registros_usuarios\repository\RegUsuRepository.class
+com\jzs\ms_registros_usuarios\model\Rol.class
+com\jzs\ms_registros_usuarios\service\RegUsuServicelmpl.class
+com\jzs\ms_registros_usuarios\controller\RegUsuNotFoundException.class
+com\jzs\ms_registros_usuarios\MsRegistrosUsuariosApplication.class
+com\jzs\ms_registros_usuarios\controller\RegUsuController$RegUsuNotFoundException.class
+com\jzs\ms_registros_usuarios\controller\RegUsuController$ErrorResponse.class
+com\jzs\ms_registros_usuarios\service\RegUsuService.class
