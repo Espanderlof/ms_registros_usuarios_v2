@@ -29,13 +29,26 @@ public class RegUsuServicelmpl implements RegUsuService {
         return regUsuRepository.save(usuario);
     }
 
+    // @Override
+    // public Usuario updateUsuario(Long id, Usuario usuario) {
+    //     if (regUsuRepository.existsById(id)) {
+    //         usuario.setId(id);
+    //         return regUsuRepository.save(usuario);
+    //     }else{
+    //         return null;
+    //     }
+    // }
+    
     @Override
     public Usuario updateUsuario(Long id, Usuario usuario) {
-        if (regUsuRepository.existsById(id)) {
-            usuario.setId(id);
-            return regUsuRepository.save(usuario);
-        }else{
-            return null;
+        Optional<Usuario> usuarioExistente = regUsuRepository.findById(id);
+        if (usuarioExistente.isPresent()) {
+            Usuario usuarioActualizado = usuarioExistente.get();
+            usuarioActualizado.setUsername(usuario.getUsername());
+            usuarioActualizado.setPassword(usuario.getPassword());
+            return regUsuRepository.save(usuarioActualizado);
+        } else {
+            throw new IllegalArgumentException("Usuario no encontrado con el ID: " + id);
         }
     }
 
